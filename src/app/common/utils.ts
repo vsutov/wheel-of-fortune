@@ -2,14 +2,13 @@ export const generateFormattedCurrencyString = (value: number, locale: string, c
   return new Intl.NumberFormat(locale, { style: 'currency', currency: currency, maximumSignificantDigits: 3 }).format(value)
 }
 
-export const shufflePrizes = (arr: number[]): number[] => {
-  return arr.reduce(
-    (newArr, _, i) => {
-      const rand = i + (Math.floor(Math.random() * (newArr.length - i)));
-      [newArr[rand], newArr[i]] = [newArr[i], newArr[rand]]
-      return newArr
-    }, [...arr]
-  )
+export const shufflePrizes = (array: number[]): number[] => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]]
+  }
+
+  return array
 }
 
 export const pickSectorColor = (value: number, levelIndex: number, prizeIndex: number, levelsLength: number): string => {
@@ -42,6 +41,6 @@ export const easingFormula = (w: { startAngle: number, endAngle: number, totalSt
 export const buildFontString = (value: number, levelIndex: number): string => {
   const fontSizePerCurrentLevelIndex = [21, 40, 105]
 
-  if (value === 0) return `bold ${fontSizePerCurrentLevelIndex[levelIndex] * 1.5}pt IcoFont`
+  if (value === 0) return `bold ${Math.ceil(fontSizePerCurrentLevelIndex[levelIndex] * 1.5)}pt IcoFont`
   return `bold ${fontSizePerCurrentLevelIndex[levelIndex]}pt Helvetica, Arial`
 }
