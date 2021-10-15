@@ -1,5 +1,4 @@
 export const generateFormattedCurrencyString = (value: number, locale: string, currency: string): string => {
-  if (value === 0) return 'V'
   return new Intl.NumberFormat(locale, { style: 'currency', currency: currency, maximumSignificantDigits: 3 }).format(value)
 }
 
@@ -38,4 +37,11 @@ export const easingFormula = (w: { startAngle: number, endAngle: number, totalSt
   const d = w.totalSteps
   const c = w.endAngle - w.startAngle
   return (-c * ((t = t / d - 1) * t * t * t - 1) + b + w.startAngle)
+}
+
+export const buildFontString = (value: number, levelIndex: number): string => {
+  const fontSizePerCurrentLevelIndex = [21, 40, 105]
+
+  if (value === 0) return `bold ${fontSizePerCurrentLevelIndex[levelIndex] * 1.5}pt IcoFont`
+  return `bold ${fontSizePerCurrentLevelIndex[levelIndex]}pt Helvetica, Arial`
 }

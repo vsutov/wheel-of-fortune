@@ -1,0 +1,37 @@
+
+#wheel-of-fortune-container {
+    width: 800px;
+    position: relative;
+}
+
+#play-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    height: 100px;
+    line-height: 100px;  
+    width: 100px;  
+    font-size: 4em;
+    font-weight: bold;
+    border-radius: 50%;
+    background-color: #ff0000;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+    animation: pulse 2s cubic-bezier(0.215, 0.61, 0.355, 1) forwards infinite;
+}
+
+
+@keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0px rgba(255, 0, 0, 0.76);
+      scale: 0.8;
+    }
+    20% {
+      scale: 1;
+    }
+    100% {
+      scale: 1;
+      box-shadow: 0 0 0 16px rgba(0, 0, 0, 0);
+    }
+  }

@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useAppSelector } from '../../common/hooks'
 import { ILevel, ISector } from '../../types'
-import { pickSectorColor, easingFormula } from '../../common/utils'
+import { pickSectorColor, easingFormula, buildFontString } from '../../common/utils'
 import { getConfig } from '../config/configSlice'
+import './Wheel.css'
 
 const Wheel = () => {
   const config = useAppSelector(getConfig)
@@ -20,7 +21,6 @@ const Wheel = () => {
 
   const wheelStyles = {
     circleLineWidthPerLevelIndex: [50, 15, 0.1],
-    fontSizePerCurrentLevelIndex: [21, 40, 105],
     outerRingColor: '#2e1811',
     primaryColor: '#ff0000'
   }
@@ -67,7 +67,6 @@ const Wheel = () => {
 
       arc = Math.PI / (sectors.length / 2)
 
-      ctx.font = `bold ${wheelStyles.fontSizePerCurrentLevelIndex[currentLevel]}pt Helvetica, Arial`
       ctx.strokeStyle = wheelStyles.outerRingColor
       ctx.lineWidth = wheelStyles.circleLineWidthPerLevelIndex[levelIndex]
       ctx.beginPath()
@@ -95,7 +94,11 @@ const Wheel = () => {
           ctx.translate(x, y + (currentLevel + 1) * 10)
         }
 
-        ctx.fillText(sector.label, -ctx.measureText(sector.label).width / 2, 0)
+        const textValue = sector.label || '\ueab2'
+
+        ctx.font = buildFontString(sector.value, currentLevel)
+        ctx.fillText(textValue, -ctx.measureText(textValue).width / 2, 0)
+
         ctx.restore()
       })
     })
@@ -159,20 +162,18 @@ const Wheel = () => {
         }
       }
 
-      if (!started) drawAll()
+      document.fonts.ready.then(() => {
+        if (!started) drawAll()
+      })
+
       if (spinning) animate()
     }
   }, [currentLevel, config, spinning, started])
 
   return (
-    <div id="wheelOfFortune">
+    <div id="wheel-of-fortune-container">
+      {!started && <div id="play-button" onClick={startGame}> <i className="icofont-spinner-alt-3" /> </div>}
       <canvas ref={canvas} width={canvasWidth} height={canvasHeight}></canvas>
-
-      {!started
-        ? <button onClick={startGame}>Spin</button>
-        : null
-      }
-
     </div>
   )
 }

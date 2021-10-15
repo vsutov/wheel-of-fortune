@@ -17,7 +17,7 @@ const buildLevelSectorsData: (prizes: number[], locale: string, currency: string
 
   const sectors = tempPrizes.map((value: number): ISector => ({
     value,
-    label: generateFormattedCurrencyString(value, locale, currency)
+    ...(value !== 0 && { label: generateFormattedCurrencyString(value, locale, currency) })
   }))
 
   return sectors

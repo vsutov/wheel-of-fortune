@@ -11,7 +11,7 @@ export interface ILevelFromServer {
 
 export interface ISector {
     value: number,
-    label: string
+    label?: string
 }
 
 export interface ILevel {
