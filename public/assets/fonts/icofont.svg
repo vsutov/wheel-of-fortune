@@ -1,0 +1,12 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg">
+<defs>
+<font id="icofont" horiz-adv-x="1000" >
+<font-face font-family="IcoFont" font-weight="400" font-style="Regular" units-per-em="1000" ascent="850" descent="-150" />
+<missing-glyph horiz-adv-x="1000" />
+<glyph glyph-name="simple-down" horiz-adv-x="1000" unicode="&#xeab2;" d="M200 457l300-300 300 300-85 86-215-215-215 215-85-86z" />
+<glyph glyph-name="spinner-alt-3" horiz-adv-x="1000" unicode="&#xeff6;" d="M509 766c-5 0-9-4-9-9 0-29 0-56 0-83 0-5 4-10 10-10 174-9 286-136 313-256 26-116-2-218-81-308-4-4-10-4-14 0-26 26-51 50-75 74-4 4-7 3-7-3 0-77 1-154 1-227 0-6 4-10 10-10 75 0 152 0 229 1 6 0 7 3 3 6-23 24-48 48-71 72-4 3-4 10-1 14 138 170 163 352 46 541-80 129-204 191-354 198z m-254-166c4 4 10 4 14 0l75-75c4-3 7-2 7 3 0 78 0 155 0 227 0 5-5 9-10 9-76 0-153 0-229 0-5 0-7-3-3-7 23-23 47-47 72-71 3-4 4-10 0-14-158-171-141-399-49-540 86-130 238-201 356-196 6 0 10 5 10 11 0 26 0 52 1 78 0 6-5 11-10 11-149 14-256 85-306 229-42 124-13 235 72 335z" />
+</font>
+</defs>
+</svg>
