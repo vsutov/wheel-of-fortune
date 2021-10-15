@@ -1,4 +1,4 @@
-import { IConfigFromServer } from './types'
+import { IConfigFromServer } from '../types'
 
 export const fetchConfigRequest = (): Promise<IConfigFromServer> => {
   return new Promise((resolve) => {
