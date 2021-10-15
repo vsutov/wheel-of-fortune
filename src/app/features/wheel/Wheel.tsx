@@ -1,12 +1,18 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState, useRef, FC } from 'react'
-import { ILevel, ISector } from '../../types'
+import { ILevel, ISector, IWheelProps, IWheelConfig } from '../../types'
 import { pickSectorColor, easingFormula, buildFontString } from '../../common/utils'
 import './Wheel.css'
 
-interface IWheelProps {
-  levels: ILevel[],
-  winAmount: number
+const canvasWidth = 800
+const canvasHeight = 800
+const canvasX = canvasWidth / 2
+const canvasY = canvasHeight / 2
+
+const wheelStyles = {
+  circleLineWidthPerLevelIndex: [50, 15, 0.1],
+  outerRingColor: '#2e1811',
+  primaryColor: '#ff0000'
 }
 
 const Wheel:FC<IWheelProps> = ({ levels: levelsFromConfig, winAmount }) => {
@@ -15,17 +21,6 @@ const Wheel:FC<IWheelProps> = ({ levels: levelsFromConfig, winAmount }) => {
   const [started, setStarted] = useState(false)
 
   const canvas = useRef<HTMLCanvasElement>(null)
-
-  const canvasWidth = 800
-  const canvasHeight = 800
-  const canvasX = canvasWidth / 2
-  const canvasY = canvasHeight / 2
-
-  const wheelStyles = {
-    circleLineWidthPerLevelIndex: [50, 15, 0.1],
-    outerRingColor: '#2e1811',
-    primaryColor: '#ff0000'
-  }
 
   const startGame = () => {
     setSpinning(true)
@@ -50,124 +45,133 @@ const Wheel:FC<IWheelProps> = ({ levels: levelsFromConfig, winAmount }) => {
     return ((PI2 - sectorsSweep * (sectorToSpinToIndex + 1)) + Math.random() * sectorsSweep - Math.PI / 2)
   }
 
+  const buildWheelConfig = (firstLevelSectors: ISector[]): IWheelConfig => {
+    return {
+      startAngle: 0,
+      endAngle: Math.PI * 4 + spinToAngle(firstLevelSectors),
+      totalSteps: 360,
+      currentStep: 0
+    }
+  }
+
   const drawWheel = (levels: ILevel[]): HTMLCanvasElement => {
     let radius = canvasWidth - 200
     let textRadius = radius / 2
 
     const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+    const ctx = canvas.getContext('2d')
     canvas.width = canvas.height = radius * 2
     const x = radius
     const y = radius
     let arc: number
 
-    levels.forEach((level, levelIndex) => {
-      const sectors = level.sectors
+    if (ctx) {
+      levels.forEach((level, levelIndex) => {
+        const sectors = level.sectors
 
-      radius = radius / 2
-      textRadius = radius / 1.5
+        radius = radius / 2
+        textRadius = radius / 1.5
 
-      arc = Math.PI / (sectors.length / 2)
+        arc = Math.PI / (sectors.length / 2)
 
-      ctx.strokeStyle = wheelStyles.outerRingColor
-      ctx.lineWidth = wheelStyles.circleLineWidthPerLevelIndex[levelIndex]
-      ctx.beginPath()
-      ctx.arc(x, y, radius, 0, Math.PI * 2, false)
-      ctx.stroke()
-      ctx.save()
-
-      sectors.forEach((sector, sectorIndex) => {
-        const angle = sectorIndex * arc
-
-        ctx.fillStyle = pickSectorColor(sector.value, levelIndex, sectorIndex, levels.length)
+        ctx.strokeStyle = wheelStyles.outerRingColor
+        ctx.lineWidth = wheelStyles.circleLineWidthPerLevelIndex[levelIndex]
         ctx.beginPath()
-        ctx.moveTo(x, y)
-        ctx.arc(x, y, radius, angle, angle + arc, false)
-        ctx.lineTo(x, y)
-        ctx.fill()
+        ctx.arc(x, y, radius, 0, Math.PI * 2, false)
+        ctx.stroke()
         ctx.save()
-        ctx.fillStyle = 'white'
 
-        if (levelIndex !== levels.length - 1) {
-          ctx.translate(x + Math.cos(angle + arc / 2) * textRadius,
-            y + Math.sin(angle + arc / 2) * textRadius)
-          ctx.rotate(angle + arc / 2 + Math.PI / 2)
-        } else {
-          ctx.translate(x, y + (currentLevel + 1) * 10)
-        }
+        sectors.forEach((sector, sectorIndex) => {
+          const angle = sectorIndex * arc
 
-        const textValue = sector.label || '\ueab2'
+          ctx.fillStyle = pickSectorColor(sector.value, levelIndex, sectorIndex, levels.length)
+          ctx.beginPath()
+          ctx.moveTo(x, y)
+          ctx.arc(x, y, radius, angle, angle + arc, false)
+          ctx.lineTo(x, y)
+          ctx.fill()
+          ctx.save()
+          ctx.fillStyle = 'white'
 
-        ctx.font = buildFontString(sector.value, currentLevel)
-        ctx.fillText(textValue, -ctx.measureText(textValue).width / 2, 0)
+          if (levelIndex !== levels.length - 1) {
+            ctx.translate(x + Math.cos(angle + arc / 2) * textRadius,
+              y + Math.sin(angle + arc / 2) * textRadius)
+            ctx.rotate(angle + arc / 2 + Math.PI / 2)
+          } else {
+            ctx.translate(x, y + (currentLevel + 1) * 10)
+          }
 
-        ctx.restore()
+          const textValue = sector.label || '\ueab2'
+
+          ctx.font = buildFontString(sector.value, currentLevel)
+          ctx.fillText(textValue, -ctx.measureText(textValue).width / 2, 0)
+
+          ctx.restore()
+        })
       })
-    })
+    }
 
     return canvas
   }
 
   const drawArrow = (): HTMLCanvasElement => {
     const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+    const ctx = canvas.getContext('2d')
     canvas.width = 80
     canvas.height = 80
-    ctx.fillStyle = wheelStyles.primaryColor
-    ctx.beginPath()
-    ctx.moveTo(0, 0)
-    ctx.lineTo(80, 0)
-    ctx.lineTo(40, 80)
-    ctx.fill()
+    if (ctx) {
+      ctx.fillStyle = wheelStyles.primaryColor
+      ctx.beginPath()
+      ctx.moveTo(0, 0)
+      ctx.lineTo(80, 0)
+      ctx.lineTo(40, 80)
+      ctx.fill()
+    }
 
     return canvas
   }
 
+  const drawAll = (ctx: CanvasRenderingContext2D, levels: ILevel[], wheel: IWheelConfig) => {
+    if (ctx) {
+      const wheelCanvas = drawWheel(levels)
+      const arrowCanvas = drawArrow()
+
+      const angle = easingFormula(wheel)
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight)
+      ctx.translate(canvasX, canvasY)
+      ctx.rotate(angle)
+      ctx.drawImage(wheelCanvas, -wheelCanvas.width / 2, -wheelCanvas.height / 2)
+      ctx.rotate(-angle)
+      ctx.translate(-canvasX, -canvasY)
+      ctx.drawImage(arrowCanvas, canvasX - arrowCanvas.width / 2, arrowCanvas.height / 2)
+    }
+  }
+
+  const animate = (ctx: CanvasRenderingContext2D, levels: ILevel[], wheel: IWheelConfig) => {
+    if (wheel.currentStep > wheel.totalSteps) {
+      setCurrentLevel(currentLevel + 1)
+      return
+    }
+    drawAll(ctx, levels, wheel)
+
+    if (currentLevel !== 2) {
+      requestAnimationFrame(() => animate(ctx, levels, wheel))
+      wheel.currentStep++
+    }
+  }
+
   useEffect(() => {
     if (canvas.current) {
-      const ctx = canvas.current.getContext('2d') as CanvasRenderingContext2D
       const levels = levelsFromConfig.slice(currentLevel)
       const firstLevelSectors = levels[0].sectors
 
-      const wheel = {
-        startAngle: 0,
-        endAngle: Math.PI * 4 + spinToAngle(firstLevelSectors),
-        totalSteps: 360,
-        currentStep: 0
-      }
+      const ctx = canvas.current.getContext('2d') as CanvasRenderingContext2D
 
-      const drawAll = () => {
-        const wheelCanvas = drawWheel(levels)
-        const arrowCanvas = drawArrow()
+      const wheel: IWheelConfig = buildWheelConfig(firstLevelSectors)
 
-        const angle = easingFormula(wheel)
-        ctx.clearRect(0, 0, canvasWidth, canvasHeight)
-        ctx.translate(canvasX, canvasY)
-        ctx.rotate(angle)
-        ctx.drawImage(wheelCanvas, -wheelCanvas.width / 2, -wheelCanvas.height / 2)
-        ctx.rotate(-angle)
-        ctx.translate(-canvasX, -canvasY)
-        ctx.drawImage(arrowCanvas, canvasX - arrowCanvas.width / 2, arrowCanvas.height / 2)
-      }
+      document.fonts.ready.then(() => !started && drawAll(ctx, levels, wheel))
 
-      const animate = () => {
-        if (wheel.currentStep > wheel.totalSteps) {
-          setCurrentLevel(currentLevel + 1)
-          return
-        }
-        drawAll()
-
-        if (currentLevel !== 2) {
-          requestAnimationFrame(animate)
-          wheel.currentStep++
-        }
-      }
-
-      document.fonts.ready.then(() => {
-        if (!started) drawAll()
-      })
-
-      if (spinning) animate()
+      if (spinning) animate(ctx, levels, wheel)
     }
   }, [currentLevel, spinning, started])
 

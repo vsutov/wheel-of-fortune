@@ -18,6 +18,18 @@ export interface ILevel {
     sectors: ISector[]
 }
 
+export interface IWheelProps {
+    levels: ILevel[],
+    winAmount: number
+}
+
+export interface IWheelConfig {
+    startAngle: number,
+    endAngle: number,
+    totalSteps: number,
+    currentStep: number
+}
+
 export interface IConfigState extends Omit<IConfigFromServer, 'levels'|'locale'|'currency'> {
     ready: boolean,
     levels: ILevel[]
