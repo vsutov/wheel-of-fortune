@@ -122,7 +122,6 @@ const Wheel = () => {
   }
 
   useEffect(() => {
-    console.log(config)
     if (canvas.current) {
       const ctx = canvas.current.getContext('2d') as CanvasRenderingContext2D
       const levels = config.levels.slice(currentLevel)
