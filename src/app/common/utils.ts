@@ -24,3 +24,11 @@ export const pickSectorColor = (value: number, levelIndex: number, prizeIndex: n
 
   return prizeIndex & 1 ? levelColors[levelIndex].primary : levelColors[levelIndex].secondary
 }
+
+export const easingFormula = (w: { startAngle: number, endAngle: number, totalSteps: number, currentStep: number }): number => {
+  let t = w.currentStep
+  const b = w.startAngle
+  const d = w.totalSteps
+  const c = w.endAngle - w.startAngle
+  return (-c * ((t = t / d - 1) * t * t * t - 1) + b + w.startAngle)
+}
