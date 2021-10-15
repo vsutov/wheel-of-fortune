@@ -1,6 +1,6 @@
-import { ConfigFromServer } from './types/config'
+import { IConfigFromServer } from './types'
 
-export const fetchConfigRequest = (): Promise<ConfigFromServer> => {
+export const fetchConfigRequest = (): Promise<IConfigFromServer> => {
   return new Promise((resolve) => {
     resolve({
       levels: [

@@ -1,19 +1,16 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useAppSelector } from '../../common/hooks'
-import { Level, Sector } from '../../types/wheel'
-import { getWheelConfig } from './wheelSlice'
-import { wheelStyles } from '../../common/styleConstants'
+import { ILevel, ISector } from '../../types'
 import { pickSectorColor, easingFormula } from '../../common/utils'
-import { getWinAmount } from '../config/configSlice'
+import { getConfig } from '../config/configSlice'
 
 const Wheel = () => {
-  const { circleLineWidthPerLevelIndex, fontSizePerCurrentLevelIndex, outerRingColor, primaryColor } = wheelStyles
+  const config = useAppSelector(getConfig)
 
-  const wheelConfig = useAppSelector(getWheelConfig)
-  const winAmount = useAppSelector(getWinAmount)
   const [currentLevel, setCurrentLevel] = useState(0)
   const [spinning, setSpinning] = useState(false)
   const [started, setStarted] = useState(false)
+
   const canvas = useRef<HTMLCanvasElement>(null)
 
   const canvasWidth = 800
@@ -21,20 +18,27 @@ const Wheel = () => {
   const canvasX = canvasWidth / 2
   const canvasY = canvasHeight / 2
 
+  const wheelStyles = {
+    circleLineWidthPerLevelIndex: [50, 15, 0.1],
+    fontSizePerCurrentLevelIndex: [21, 40, 105],
+    outerRingColor: '#2e1811',
+    primaryColor: '#ff0000'
+  }
+
   const startGame = () => {
     setSpinning(true)
     setStarted(true)
   }
 
-  const spinToAngle = (sectors: Sector[]): number => {
+  const spinToAngle = (sectors: ISector[]): number => {
     let sectorToSpinToIndex: number
 
     if (!spinning) return 0
 
-    if (sectors.map(sector => sector.value).indexOf(winAmount) < 0) {
+    if (sectors.map(sector => sector.value).indexOf(config.winAmount) < 0) {
       sectorToSpinToIndex = sectors.map(sector => sector.value).indexOf(0)
     } else {
-      sectorToSpinToIndex = sectors.map(sector => sector.value).indexOf(winAmount)
+      sectorToSpinToIndex = sectors.map(sector => sector.value).indexOf(config.winAmount)
       setSpinning(false)
     }
 
@@ -44,7 +48,7 @@ const Wheel = () => {
     return ((PI2 - sectorsSweep * (sectorToSpinToIndex + 1)) + Math.random() * sectorsSweep - Math.PI / 2)
   }
 
-  const drawWheel = (levels: Level[]): HTMLCanvasElement => {
+  const drawWheel = (levels: ILevel[]): HTMLCanvasElement => {
     let radius = canvasWidth - 200
     let textRadius = radius / 2
 
@@ -63,9 +67,9 @@ const Wheel = () => {
 
       arc = Math.PI / (sectors.length / 2)
 
-      ctx.font = `bold ${fontSizePerCurrentLevelIndex[currentLevel]}pt Helvetica, Arial`
-      ctx.strokeStyle = outerRingColor
-      ctx.lineWidth = circleLineWidthPerLevelIndex[levelIndex]
+      ctx.font = `bold ${wheelStyles.fontSizePerCurrentLevelIndex[currentLevel]}pt Helvetica, Arial`
+      ctx.strokeStyle = wheelStyles.outerRingColor
+      ctx.lineWidth = wheelStyles.circleLineWidthPerLevelIndex[levelIndex]
       ctx.beginPath()
       ctx.arc(x, y, radius, 0, Math.PI * 2, false)
       ctx.stroke()
@@ -104,21 +108,21 @@ const Wheel = () => {
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     canvas.width = 80
     canvas.height = 80
-    ctx.fillStyle = primaryColor
+    ctx.fillStyle = wheelStyles.primaryColor
     ctx.beginPath()
     ctx.moveTo(0, 0)
     ctx.lineTo(80, 0)
     ctx.lineTo(40, 80)
     ctx.fill()
 
-    console.log('asd')
     return canvas
   }
 
   useEffect(() => {
+    console.log(config)
     if (canvas.current) {
       const ctx = canvas.current.getContext('2d') as CanvasRenderingContext2D
-      const levels = wheelConfig.levels.slice(currentLevel)
+      const levels = config.levels.slice(currentLevel)
       const firstLevelSectors = levels[0].sectors
 
       const wheel = {
@@ -158,7 +162,7 @@ const Wheel = () => {
       if (!started) drawAll()
       if (spinning) animate()
     }
-  }, [currentLevel, wheelConfig.levels, winAmount, spinning, started])
+  }, [currentLevel, config, spinning, started])
 
   return (
     <div id="wheelOfFortune">

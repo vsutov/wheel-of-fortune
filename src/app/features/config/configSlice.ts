@@ -1,21 +1,38 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { RootState } from '../../store'
-import { ConfigState } from '../../types/config'
+import { IConfigFromServer, IConfigState, ILevelFromServer, ISector } from '../../types'
 import { fetchConfigRequest } from '../../api'
+import { generateFormattedCurrencyString, shufflePrizes } from '../../common/utils'
 
-const initialState: ConfigState = {
+const initialState: IConfigState = {
   levels: [],
   winAmount: 0,
-  ready: false,
-  locale: 'et-EE',
-  currency: 'EUR'
+  ready: false
 }
 
-export const fetchConfig = createAsyncThunk(
+const buildLevelSectorsData: (prizes: number[], locale: string, currency: string) => ISector[] = (prizes, locale, currency) => {
+  const tempPrizes = shufflePrizes([...prizes])
+
+  if (tempPrizes.length > 1) tempPrizes.push(0)
+
+  const sectors = tempPrizes.map((value: number): ISector => ({
+    value,
+    label: generateFormattedCurrencyString(value, locale, currency)
+  }))
+
+  return sectors
+}
+
+export const fetchAndSetConfig = createAsyncThunk(
   'config/fetch',
   async () => {
-    const response = await fetchConfigRequest()
-    return response
+    const response: IConfigFromServer = await fetchConfigRequest()
+
+    const { levels: levelsFromServer, locale, currency, winAmount } = response
+
+    const levels = levelsFromServer.map((level: ILevelFromServer) => ({ sectors: buildLevelSectorsData(level.prizes, locale, currency) }))
+
+    return { levels, winAmount }
   }
 )
 
@@ -24,13 +41,12 @@ const configSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchConfig.fulfilled, (state, action) => {
+    builder.addCase(fetchAndSetConfig.fulfilled, (state, action) => {
       Object.assign(state, { ...action.payload, ready: true })
     })
   }
 })
 
 export const getConfig = (state: RootState) => state.config
-export const getWinAmount = (state: RootState) => state.config.winAmount
 
 export default configSlice.reducer
