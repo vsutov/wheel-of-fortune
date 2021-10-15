@@ -4,12 +4,12 @@ import { ILevel, ISector } from '../../types'
 import { pickSectorColor, easingFormula, buildFontString } from '../../common/utils'
 import './Wheel.css'
 
-type TWheelProps = {
+interface IWheelProps {
   levels: ILevel[],
   winAmount: number
 }
 
-const Wheel:FC<TWheelProps> = ({ levels: levelsFromConfig, winAmount }) => {
+const Wheel:FC<IWheelProps> = ({ levels: levelsFromConfig, winAmount }) => {
   const [currentLevel, setCurrentLevel] = useState(0)
   const [spinning, setSpinning] = useState(false)
   const [started, setStarted] = useState(false)
@@ -173,7 +173,6 @@ const Wheel:FC<TWheelProps> = ({ levels: levelsFromConfig, winAmount }) => {
 
   return (
     <div id="wheel-of-fortune-container">
-      {name}
       {!started && <div id="play-button" onClick={startGame}> <i className="icofont-spinner-alt-3" /> </div>}
       <canvas ref={canvas} width={canvasWidth} height={canvasHeight}></canvas>
     </div>
