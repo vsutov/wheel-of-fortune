@@ -1,46 +1,97 @@
-# Getting Started with Create React App
+# Wheel of Fortune test assignment
+**Vlad Šutov**
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The demo of the solution is **[available here](https://wheel-of-fortune-notbad.vercel.app/)**
 
-## Available Scripts
+## Notes
 
-In the project directory, you can run:
+The test assignment has been developed with these things in mind:
+- The component has a fixed width and height of 800px for prototyping purposes
+- The styling of the component is hardcoded
+- The amount of levels is fixed
+- The amount of prizes per level is not limited
+- Redux Toolkit - in the scope of the assignment it might seem like an unnecessary overhead, however it has been added to the stack having in the mind the fact that a potential real-word implementation will most likely fetch required data from the API using RTK Query. In the scope of the demo, the API request has been mocked using a simple Promise and an async thunk
+- **The amount the player will win is pre-defined** and exists in at least one of the levels' prizes. In the demo it is set to **23**
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Interaction with API
+The application expects a response from the API in the following format:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```js
+{
+  levels: [
+    {
+      prizes: [1, 2, 3, 4, 5, 5, 6, 6, 8]
+    },
+    {
+      prizes: [9, 10, 11, 15]
+    },
+    {
+      prizes: [23]
+    }
+  ],
+  winAmount: 23,
+  currency: 'EUR',
+  locale: 'et-EE'
+}
+```
 
-### `npm test`
+It should be noted that the response was made transparent to the end-user on purpose, real-word implementation will most likely serve this with token/other encrypted format.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+After the fulfillment of the request, state is populated with modified data from the response.
 
-### `npm run build`
+The `currency` and the `locale` properties are needed to generate labels for sectors of the wheel using the `generateFormattedCurrencyString` util that returns a `Intl.NumberFormat` string, then they are omitted from the object.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Every game, prizes are shuffled to "spice things up" by the `shufflePrizes` util.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+In the end, state object looks like following (given that the currency and locale properties are defined as above):
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```js
+{
+  levels: [
+    {
+      sectors: [
+        {
+          value: 1,
+          label: '5 €'
+        },
+        ...
+      ]
+    },
+    ...
+  ],
+  winAmount: 23,
+  ready: true
+}
 
-### `npm run eject`
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+The `ready` property indicates the application that the data is ready for the `Wheel.tsx` component to consume.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Rendering
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+The wheel of fortune is entirely rendered using HTML5 Canvas with the exception of the CTA button. Reason for picking canvas over SVG is performance. [See here](https://css-tricks.com/when-to-use-svg-vs-when-to-use-canvas/#sarah-drasners-comparison), specifically "Movement of tons of objects" point.
 
-## Learn More
+The colors of the sectors are picked based on the current level, total amount of levels and sector index by the `pickSectorColor` util.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+The text inside the sector depends on whether or not the sector value is a natural number (in case of "level up" sectors, the value is set to `0`) or not. For ordinary sectors, the generated label is used, for "level up" sectors, IcoFont chevron icon is used instead. The font string is generated using the `buildFontString` util.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Game process
+
+The game begins after the user presses the CTA button and continues until the `winAmount` has been found in the current level sectors' value and the spinning to the aforementioned sector has concluded.
+
+## Local testing/development
+
+Pull repository, install dependencies with `npm i` command
+
+### Run with hot reload
+```
+npm start
+```
+
+## Run tests
+
+```
+npm test
+```
