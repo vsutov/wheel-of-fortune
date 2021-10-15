@@ -2,13 +2,14 @@ export const generateFormattedCurrencyString = (value: number, locale: string, c
   return new Intl.NumberFormat(locale, { style: 'currency', currency: currency, maximumSignificantDigits: 3 }).format(value)
 }
 
-export const shufflePrizes = (array: number[]): number[] => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]]
-  }
-
-  return array
+export const shufflePrizes = (arr: number[]): number[] => {
+  return arr.reduce(
+    (newArr, _, i) => {
+      const rand = i + (Math.floor(Math.random() * (newArr.length - i)));
+      [newArr[rand], newArr[i]] = [newArr[i], newArr[rand]]
+      return newArr
+    }, [...arr]
+  )
 }
 
 export const pickSectorColor = (value: number, levelIndex: number, prizeIndex: number, levelsLength: number): string => {
