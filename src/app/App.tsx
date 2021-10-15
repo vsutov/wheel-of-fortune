@@ -17,7 +17,7 @@ const App = () => {
   return (
     <div className="App">
           {config.ready
-            ? <Wheel />
+            ? <Wheel levels={config.levels} winAmount={config.winAmount} />
             : 'Loading...'
           }
     </div>

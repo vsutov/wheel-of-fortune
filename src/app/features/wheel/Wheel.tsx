@@ -1,13 +1,15 @@
-import React, { useEffect, useState, useRef } from 'react'
-import { useAppSelector } from '../../common/hooks'
+/* eslint-disable react/prop-types */
+import React, { useEffect, useState, useRef, FC } from 'react'
 import { ILevel, ISector } from '../../types'
 import { pickSectorColor, easingFormula, buildFontString } from '../../common/utils'
-import { getConfig } from '../config/configSlice'
 import './Wheel.css'
 
-const Wheel = () => {
-  const config = useAppSelector(getConfig)
+type TWheelProps = {
+  levels: ILevel[],
+  winAmount: number
+}
 
+const Wheel:FC<TWheelProps> = ({ levels: levelsFromConfig, winAmount }) => {
   const [currentLevel, setCurrentLevel] = useState(0)
   const [spinning, setSpinning] = useState(false)
   const [started, setStarted] = useState(false)
@@ -35,10 +37,10 @@ const Wheel = () => {
 
     if (!spinning) return 0
 
-    if (sectors.map(sector => sector.value).indexOf(config.winAmount) < 0) {
+    if (sectors.map(sector => sector.value).indexOf(winAmount) < 0) {
       sectorToSpinToIndex = sectors.map(sector => sector.value).indexOf(0)
     } else {
-      sectorToSpinToIndex = sectors.map(sector => sector.value).indexOf(config.winAmount)
+      sectorToSpinToIndex = sectors.map(sector => sector.value).indexOf(winAmount)
       setSpinning(false)
     }
 
@@ -124,7 +126,7 @@ const Wheel = () => {
   useEffect(() => {
     if (canvas.current) {
       const ctx = canvas.current.getContext('2d') as CanvasRenderingContext2D
-      const levels = config.levels.slice(currentLevel)
+      const levels = levelsFromConfig.slice(currentLevel)
       const firstLevelSectors = levels[0].sectors
 
       const wheel = {
@@ -167,10 +169,11 @@ const Wheel = () => {
 
       if (spinning) animate()
     }
-  }, [currentLevel, config, spinning, started])
+  }, [currentLevel, spinning, started])
 
   return (
     <div id="wheel-of-fortune-container">
+      {name}
       {!started && <div id="play-button" onClick={startGame}> <i className="icofont-spinner-alt-3" /> </div>}
       <canvas ref={canvas} width={canvasWidth} height={canvasHeight}></canvas>
     </div>
