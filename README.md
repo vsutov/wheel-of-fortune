@@ -68,6 +68,9 @@ In the end, state object looks like following (given that the currency and local
 
 The `ready` property indicates the application that the data is ready for the `Wheel.tsx` component to consume.
 
+## Game process
+
+The game begins after the user presses the CTA button and continues until the `winAmount` has been found in the current level sectors' value and the spinning to the aforementioned sector has concluded.
 
 ## Rendering
 
@@ -77,9 +80,7 @@ The colors of the sectors are picked based on the current level, total amount of
 
 The text inside the sector depends on whether or not the sector value is a natural number (in case of "level up" sectors, the value is set to `0`) or not. For ordinary sectors, the generated label is used, for "level up" sectors, IcoFont chevron icon is used instead. The font string is generated using the `buildFontString` util.
 
-## Game process
-
-The game begins after the user presses the CTA button and continues until the `winAmount` has been found in the current level sectors' value and the spinning to the aforementioned sector has concluded.
+Since `requestAnimationFrame` is synced to monitor's refresh rate, it is artificially throttled to 60fps to avoid too quick spinning on high refresh rate monitors. 
 
 ## Local testing/development
 
@@ -90,7 +91,7 @@ Pull repository, install dependencies with `npm i` command
 npm start
 ```
 
-## Run tests
+### Run tests
 
 ```
 npm test
