@@ -1,7 +1,6 @@
-/* eslint-disable react/prop-types */
 import React, { useEffect, useState, useRef, FC } from 'react'
-import { ILevel, ISector, IWheelProps, IWheelConfig } from '../../types'
-import { pickSectorColor, easingFormula, buildFontString } from '../../common/utils'
+import { ILevel, ISector, IWheelProps, IWheelConfig } from '../types'
+import { pickSectorColor, easingFormula, buildFontString } from '../common/utils'
 import './Wheel.css'
 
 const canvasWidth = 800
@@ -9,11 +8,15 @@ const canvasHeight = 800
 const canvasX = canvasWidth / 2
 const canvasY = canvasHeight / 2
 
+const renderingFps = 60
+
 const wheelStyles = {
   circleLineWidthPerLevelIndex: [50, 15, 0.1],
   outerRingColor: '#2e1811',
   primaryColor: '#ff0000'
 }
+
+const chevronIconUnicode = '\ueab2'
 
 const Wheel:FC<IWheelProps> = ({ levels: levelsFromConfig, winAmount }) => {
   const [currentLevel, setCurrentLevel] = useState(0)
@@ -32,10 +35,12 @@ const Wheel:FC<IWheelProps> = ({ levels: levelsFromConfig, winAmount }) => {
 
     if (!spinning) return 0
 
-    if (sectors.map(sector => sector.value).indexOf(winAmount) < 0) {
-      sectorToSpinToIndex = sectors.map(sector => sector.value).indexOf(0)
+    const sectorMappedValue = (val: number) => sectors.map(sector => sector.value).indexOf(val)
+
+    if (sectorMappedValue(winAmount) < 0) {
+      sectorToSpinToIndex = sectorMappedValue(0)
     } else {
-      sectorToSpinToIndex = sectors.map(sector => sector.value).indexOf(winAmount)
+      sectorToSpinToIndex = sectorMappedValue(winAmount)
       setSpinning(false)
     }
 
@@ -101,7 +106,7 @@ const Wheel:FC<IWheelProps> = ({ levels: levelsFromConfig, winAmount }) => {
             ctx.translate(x, y + (currentLevel + 1) * 10)
           }
 
-          const textValue = sector.label || '\ueab2'
+          const textValue = sector.label || chevronIconUnicode
 
           ctx.font = buildFontString(sector.value, currentLevel)
           ctx.fillText(textValue, -ctx.measureText(textValue).width / 2, 0)
@@ -157,7 +162,7 @@ const Wheel:FC<IWheelProps> = ({ levels: levelsFromConfig, winAmount }) => {
     if (currentLevel !== 2) {
       setTimeout(() => {
         requestAnimationFrame(() => animate(ctx, levels, wheel))
-      }, 1000 / 60)
+      }, 1000 / renderingFps)
 
       wheel.currentStep++
     }

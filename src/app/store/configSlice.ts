@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { RootState } from '../../store'
-import { IConfigFromServer, IConfigState, ILevelFromServer, ISector } from '../../types'
-import { fetchConfigRequest } from '../../api'
-import { generateFormattedCurrencyString, shufflePrizes } from '../../common/utils'
+import { RootState } from '.'
+import { IConfigFromServer, IConfigState, ILevelFromServer, ISector } from '../types'
+import { fetchConfigRequest } from '../api'
+import { generateFormattedCurrencyString, shufflePrizes } from '../common/utils'
 
 const initialState: IConfigState = {
   levels: [],

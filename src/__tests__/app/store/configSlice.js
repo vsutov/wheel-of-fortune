@@ -1,5 +1,5 @@
-import reducer, { fetchAndSetConfig } from '../../../../app/features/config/configSlice'
-import thunkPayload from '../../../../__mocks__/thunkPayload'
+import reducer, { fetchAndSetConfig } from '../../../app/store/configSlice'
+import thunkPayload from '../../../__mocks__/thunkPayload'
 
 describe('configSlice', () => {
   it('returns initial state', () => {

@@ -1,16 +1,13 @@
-export const generateFormattedCurrencyString = (value: number, locale: string, currency: string): string => {
-  return new Intl.NumberFormat(locale, { style: 'currency', currency: currency, maximumSignificantDigits: 3 }).format(value)
-}
+export const generateFormattedCurrencyString = (value: number, locale: string, currency: string): string =>
+  new Intl.NumberFormat(locale, { style: 'currency', currency, maximumSignificantDigits: 3 }).format(value)
 
-export const shufflePrizes = (arr: number[]): number[] => {
-  return arr.reduce(
-    (newArr, _, i) => {
-      const rand = i + (Math.floor(Math.random() * (newArr.length - i)));
-      [newArr[rand], newArr[i]] = [newArr[i], newArr[rand]]
-      return newArr
-    }, [...arr]
-  )
-}
+export const shufflePrizes = (prizes: number[]): number[] => prizes.reduce(
+  (newPrizes, _, i) => {
+    const rand = i + (Math.floor(Math.random() * (newPrizes.length - i)));
+    [newPrizes[rand], newPrizes[i]] = [newPrizes[i], newPrizes[rand]]
+    return newPrizes
+  }, [...prizes]
+)
 
 export const pickSectorColor = (value: number, levelIndex: number, prizeIndex: number, levelsLength: number): string => {
   const levelColors = [
@@ -31,12 +28,17 @@ export const pickSectorColor = (value: number, levelIndex: number, prizeIndex: n
   return prizeIndex & 1 ? levelColors[levelIndex].primary : levelColors[levelIndex].secondary
 }
 
-export const easingFormula = (w: { startAngle: number, endAngle: number, totalSteps: number, currentStep: number }): number => {
-  let t = w.currentStep
-  const b = w.startAngle
-  const d = w.totalSteps
-  const c = w.endAngle - w.startAngle
-  return (-c * ((t = t / d - 1) * t * t * t - 1) + b + w.startAngle)
+interface IEasingFormulaParams {
+  startAngle: number,
+  endAngle: number,
+  totalSteps: number,
+  currentStep: number
+}
+
+export const easingFormula = ({ startAngle, endAngle, totalSteps, currentStep }: IEasingFormulaParams): number => {
+  let cs = currentStep
+
+  return (-(endAngle - startAngle) * ((cs = cs / totalSteps - 1) * cs * cs * cs - 1) + (startAngle * 2))
 }
 
 export const buildFontString = (value: number, levelIndex: number): string => {
