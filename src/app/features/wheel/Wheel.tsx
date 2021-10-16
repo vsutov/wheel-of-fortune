@@ -155,7 +155,10 @@ const Wheel:FC<IWheelProps> = ({ levels: levelsFromConfig, winAmount }) => {
     drawAll(ctx, levels, wheel)
 
     if (currentLevel !== 2) {
-      requestAnimationFrame(() => animate(ctx, levels, wheel))
+      setTimeout(() => {
+        requestAnimationFrame(() => animate(ctx, levels, wheel))
+      }, 1000 / 60)
+
       wheel.currentStep++
     }
   }
