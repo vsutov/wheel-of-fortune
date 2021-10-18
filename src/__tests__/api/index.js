@@ -1,4 +1,4 @@
-import { fetchConfigRequest } from '../../../app/api'
+import { fetchConfigRequest } from '../../api'
 
 describe('API', () => {
   it('fetchConfigRequest returns mocked api response', () => {
