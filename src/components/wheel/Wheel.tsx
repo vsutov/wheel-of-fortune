@@ -18,8 +18,6 @@ const Wheel:FC<IWheelProps> = ({ levels, winAmount }) => {
 
   const wheelState: IWheelState = buildWheelConfig(currentLevelSectors, winAmount)
 
-  const startGame = () => setGameStarted(true)
-
   const renderCanvas = (ctx: CanvasRenderingContext2D) => {
     drawWheel(ctx, levelsToRender, wheelState, currentLevel)
 
@@ -54,7 +52,7 @@ const Wheel:FC<IWheelProps> = ({ levels, winAmount }) => {
 
   return (
     <div id="wheel-of-fortune-container">
-      {!gameStarted && <div id="play-button" onClick={startGame}> <i className="icofont-spinner-alt-3" /> </div>}
+      {!gameStarted && <div id="play-button" onClick={() => setGameStarted(true)}> <i className="icofont-spinner-alt-3" /> </div>}
       <canvas ref={canvas} width="800" height="800"></canvas>
     </div>
   )
