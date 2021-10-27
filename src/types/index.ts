@@ -23,7 +23,7 @@ export interface IWheelProps {
     winAmount: number
 }
 
-export interface IWheelConfig {
+export interface IWheelState {
     startAngle: number,
     endAngle: number,
     totalSteps: number,
